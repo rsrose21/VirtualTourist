@@ -16,24 +16,90 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+        //http://stackoverflow.com/questions/3959994/how-to-add-a-push-pin-to-a-mkmapviewios-when-touching
+        //target gesture recognizer on our map
+        var longPressRecogniser = UILongPressGestureRecognizer(target: self, action: "addPin:")
+        longPressRecogniser.minimumPressDuration = 1.0
+        mapView.addGestureRecognizer(longPressRecogniser)
+        
+        // set initial location in Honolulu
+        let initialLocation = CLLocation(latitude: 21.282778, longitude: -157.829444)
+        centerMapOnLocation(initialLocation)
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBarHidden = true
     }
-    */
+    
+    var sharedContext: NSManagedObjectContext {
+        return CoreDataManager.sharedInstance.managedObjectContext!
+    }
+    
+    //helper method from: http://www.raywenderlich.com/90971/introduction-mapkit-swift-tutorial
+    let regionRadius: CLLocationDistance = 1000
+    func centerMapOnLocation(location: CLLocation) {
+        let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate,
+            regionRadius * 2.0, regionRadius * 2.0)
+        mapView.setRegion(coordinateRegion, animated: true)
+    }
+    
+    // MARK: Gesture support
+    
+    //http://stackoverflow.com/questions/3959994/how-to-add-a-push-pin-to-a-mkmapviewios-when-touching
+    func addPin(gestureRecognizer: UIGestureRecognizer) {
+        println("gesture recognized")
+        if gestureRecognizer.state == UIGestureRecognizerState.Ended {
+            let touchPoint = gestureRecognizer.locationInView(gestureRecognizer.view!)
+            let touchMapCoordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
+            
+            let temporaryTitle = "\(touchMapCoordinate.latitude), \(touchMapCoordinate.longitude)"
+            let dictionary: [String: AnyObject] = [Pin.Keys.Latitude: touchMapCoordinate.latitude,
+                Pin.Keys.Longitude: touchMapCoordinate.longitude, Pin.Keys.Location: temporaryTitle]
+            
+            let pin = Pin(dictionary: dictionary, context: self.sharedContext)
+            CoreDataManager.sharedInstance.saveContext()
+        }
+    }
+    
+    private func reverseGeocode(annotation: Pin) {
+        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
+        let location = CLLocation(latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
+        //http://stackoverflow.com/questions/24345296/swift-clgeocoder-reversegeocodelocation-completionhendler-closure
+        CLGeocoder().reverseGeocodeLocation(location, completionHandler: {(placemarks, error) in
+            UIApplication.sharedApplication().networkActivityIndicatorVisible = false
+            var placemark:CLPlacemark!
+            
+            if error == nil && placemarks.count > 0 {
+                placemark = placemarks[0] as! CLPlacemark
+                
+                var addressString : String = ""
+                if placemark.subThoroughfare != nil {
+                    addressString = placemark.subThoroughfare + " "
+                }
+                if placemark.thoroughfare != nil {
+                    addressString = addressString + placemark.thoroughfare + ", "
+                }
+                if placemark.postalCode != nil {
+                    addressString = addressString + placemark.postalCode + " "
+                }
+                if placemark.locality != nil {
+                    addressString = addressString + placemark.locality + ", "
+                }
+                if placemark.administrativeArea != nil {
+                    addressString = addressString + placemark.administrativeArea + " "
+                }
+                if placemark.country != nil {
+                    addressString = addressString + placemark.country
+                }
+                
+                println(addressString)
+                //update Pin and save
+                annotation.location = addressString
+                CoreDataManager.sharedInstance.saveContext()
+            }
+            
+        })
+    }
 
 }

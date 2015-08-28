@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		3D74AAD11B90F700003D3F2E /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D74AAD01B90F700003D3F2E /* MapViewController.swift */; };
 		3D74AAD31B90F84F003D3F2E /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D74AAD21B90F84F003D3F2E /* CoreDataManager.swift */; };
+		3D74AAD51B9100BA003D3F2E /* Pin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D74AAD41B9100BA003D3F2E /* Pin.swift */; };
+		3D74AAD71B910327003D3F2E /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D74AAD61B910327003D3F2E /* Photo.swift */; };
+		3D74AAD91B910F93003D3F2E /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D74AAD81B910F93003D3F2E /* ImageCache.swift */; };
+		3D74AADB1B911960003D3F2E /* VCMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D74AADA1B911960003D3F2E /* VCMapView.swift */; };
 		3DDE41001B8A98310096A786 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE40FF1B8A98310096A786 /* AppDelegate.swift */; };
 		3DDE41031B8A98310096A786 /* VirtualTourist.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE41011B8A98310096A786 /* VirtualTourist.xcdatamodeld */; };
 		3DDE41051B8A98320096A786 /* MasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DDE41041B8A98320096A786 /* MasterViewController.swift */; };
@@ -32,6 +36,10 @@
 /* Begin PBXFileReference section */
 		3D74AAD01B90F700003D3F2E /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		3D74AAD21B90F84F003D3F2E /* CoreDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		3D74AAD41B9100BA003D3F2E /* Pin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pin.swift; sourceTree = "<group>"; };
+		3D74AAD61B910327003D3F2E /* Photo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
+		3D74AAD81B910F93003D3F2E /* ImageCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
+		3D74AADA1B911960003D3F2E /* VCMapView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VCMapView.swift; sourceTree = "<group>"; };
 		3DDE40FA1B8A98310096A786 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3DDE40FE1B8A98310096A786 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3DDE40FF1B8A98310096A786 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -95,6 +103,10 @@
 				3DDE40FD1B8A98310096A786 /* Supporting Files */,
 				3D74AAD01B90F700003D3F2E /* MapViewController.swift */,
 				3D74AAD21B90F84F003D3F2E /* CoreDataManager.swift */,
+				3D74AAD41B9100BA003D3F2E /* Pin.swift */,
+				3D74AAD61B910327003D3F2E /* Photo.swift */,
+				3D74AAD81B910F93003D3F2E /* ImageCache.swift */,
+				3D74AADA1B911960003D3F2E /* VCMapView.swift */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";
@@ -224,7 +236,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3D74AAD71B910327003D3F2E /* Photo.swift in Sources */,
+				3D74AAD51B9100BA003D3F2E /* Pin.swift in Sources */,
+				3D74AADB1B911960003D3F2E /* VCMapView.swift in Sources */,
 				3D74AAD31B90F84F003D3F2E /* CoreDataManager.swift in Sources */,
+				3D74AAD91B910F93003D3F2E /* ImageCache.swift in Sources */,
 				3DDE41031B8A98310096A786 /* VirtualTourist.xcdatamodeld in Sources */,
 				3DDE41001B8A98310096A786 /* AppDelegate.swift in Sources */,
 				3DDE41051B8A98320096A786 /* MasterViewController.swift in Sources */,
