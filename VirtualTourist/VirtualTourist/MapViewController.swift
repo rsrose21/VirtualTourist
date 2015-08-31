@@ -62,10 +62,13 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             
             let pin = Pin(dictionary: dictionary, context: self.sharedContext)
             CoreDataManager.sharedInstance.saveContext()
+            
+            mapView.addAnnotation(pin)
+            reverseGeocode(pin)
         }
     }
     
-    private func reverseGeocode(annotation: Pin) {
+    func reverseGeocode(annotation: Pin) {
         UIApplication.sharedApplication().networkActivityIndicatorVisible = true
         let location = CLLocation(latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
         //http://stackoverflow.com/questions/24345296/swift-clgeocoder-reversegeocodelocation-completionhendler-closure

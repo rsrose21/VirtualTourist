@@ -17,8 +17,10 @@ extension Pin: MKAnnotation  {
             return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
         }
     }
-    
-    var subtitle: String {
+    var title: String {
         return location
+    }
+    var subtitle: String {
+        return "tap to see photos"
     }
 }
