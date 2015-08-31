@@ -22,6 +22,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         longPressRecogniser.minimumPressDuration = 1.0
         mapView.addGestureRecognizer(longPressRecogniser)
         
+        //load any saved Pins
+        fetchPins()
+        
         // set initial location in Honolulu
         let initialLocation = CLLocation(latitude: 21.282778, longitude: -157.829444)
         centerMapOnLocation(initialLocation)
@@ -100,6 +103,21 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             }
             
         })
+    }
+    
+    private func fetchPins() {
+        var error: NSError? = nil
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        
+        let results = self.sharedContext.executeFetchRequest(fetchRequest, error: &error)
+        if error != nil {
+            displayError("Unable to load saved pins")
+            return
+        }
+        for pin in results as! [Pin] {
+            println("adding pin")
+            self.mapView.addAnnotation(pin)
+        }
     }
 
 }

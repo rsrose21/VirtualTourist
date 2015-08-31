@@ -8,13 +8,12 @@
 
 import Foundation
 import CoreData
-import MapKit
 
 //make Pin available to Objective-C code
 @objc(Pin)
 
 //make Pin a subclass of NSManagedObject
-class Pin : NSManagedObject, MKAnnotation {
+class Pin : NSManagedObject {
     
     struct Keys {
         static let Latitude = "latitude"
@@ -30,14 +29,7 @@ class Pin : NSManagedObject, MKAnnotation {
     @NSManaged var location: String
     @NSManaged var photos: [Photo]
     
-    // MARK: computed properties to conform to the MKAnnotation protocol
-    var coordinate: CLLocationCoordinate2D {
-        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-    }
-    
-    var subtitle: String {
-        return location
-    }
+
     
     // Include this standard Core Data init method.
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -61,7 +53,7 @@ class Pin : NSManagedObject, MKAnnotation {
         // Now we can call an init method that we have inherited from NSManagedObject. Remember that
         // the Pin class is a subclass of NSManagedObject. This inherited init method does the
         // work of "inserting" our object into the context that was passed in as a parameter
-        super.init(entity: entity,insertIntoManagedObjectContext: context)
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
         
         // After the Core Data work has been taken care of we can init the properties from the
         // dictionary. This works in the same way that it did before we started on Core Data
