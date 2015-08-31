@@ -30,7 +30,6 @@ class Pin : NSManagedObject {
     @NSManaged var photos: [Photo]
     
 
-    
     // Include this standard Core Data init method.
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)

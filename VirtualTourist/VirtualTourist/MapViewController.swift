@@ -118,8 +118,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             return
         }
         for pin in results as! [Pin] {
-            println("adding pin")
-            self.mapView.addAnnotation(pin)
+            //http://stackoverflow.com/questions/25826221/is-it-possible-to-have-draggable-annotations-in-swift-when-using-mapkit
+            let pa = MKPointAnnotation()
+            pa.coordinate = pin.coordinate
+            pa.title = pin.title
+            self.mapView.addAnnotation(pa)
         }
     }
 

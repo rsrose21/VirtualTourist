@@ -36,6 +36,7 @@ extension MapViewController: MKMapViewDelegate {
         return nil
     }
     
+    //make pin draggable by user: http://stackoverflow.com/questions/29776853/ios-swift-mapkit-making-an-annotation-draggable-by-the-user
     func mapView(mapView: MKMapView!, annotationView view: MKAnnotationView!, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
         switch (newState) {
         case .Starting:
