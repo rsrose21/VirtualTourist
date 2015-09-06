@@ -13,24 +13,23 @@ import MapKit
 
 extension MapViewController: MKMapViewDelegate {
     
-    // 1
+    // https://www.hackingwithswift.com/read/19/3/annotations-and-accessory-views-mkpinannotationview
     func mapView(mapView: MKMapView!, viewForAnnotation annotation: MKAnnotation!) -> MKAnnotationView! {
         if let annotation = annotation as? Pin {
             let identifier = "pin"
             var view: MKPinAnnotationView
-            if let dequeuedView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier)
-                as? MKPinAnnotationView { // 2
-                    dequeuedView.annotation = annotation
-                    view = dequeuedView
+            if let dequeuedView = mapView.dequeueReusableAnnotationViewWithIdentifier(identifier) as? MKPinAnnotationView { // 2
+                dequeuedView.annotation = annotation
+                view = dequeuedView
             } else {
                 // 3
                 view = MKPinAnnotationView(annotation: annotation, reuseIdentifier: identifier)
                 view.canShowCallout = true
                 view.calloutOffset = CGPoint(x: -5, y: 5)
                 view.rightCalloutAccessoryView = UIButton.buttonWithType(.DetailDisclosure) as! UIButton
+                view.animatesDrop = true
+                view.draggable = true
             }
-            view.animatesDrop = true
-            view.draggable = true
             return view
         }
         return nil
@@ -45,5 +44,17 @@ extension MapViewController: MKMapViewDelegate {
             view.dragState = .None
         default: break
         }
+    }
+    
+    func mapView(mapView: MKMapView!, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
+        if control != annotationView.rightCalloutAccessoryView { return }
+        
+        let selectedPin = annotationView.annotation as! Pin
+        //load images for selected Pin
+        
+        let controller = self.storyboard?.instantiateViewControllerWithIdentifier("PhotoAlbumViewController") as! PhotoAlbumViewController
+        //set selected Pin before transitioning to next view
+        controller.currentPin = selectedPin
+        self.navigationController?.pushViewController(controller, animated: true)
     }
 }

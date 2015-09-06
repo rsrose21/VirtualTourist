@@ -16,6 +16,10 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //this enables viewForAnnotation methods to be called
+        mapView.delegate = self
+        
         //http://stackoverflow.com/questions/3959994/how-to-add-a-push-pin-to-a-mkmapviewios-when-touching
         //target gesture recognizer on our map
         var longPressRecogniser = UILongPressGestureRecognizer(target: self, action: "addPin:")
@@ -24,10 +28,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         //load any saved Pins
         fetchPins()
-        
-        // set initial location in Honolulu
-        let initialLocation = CLLocation(latitude: 21.282778, longitude: -157.829444)
-        centerMapOnLocation(initialLocation)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -39,13 +39,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return CoreDataManager.sharedInstance.managedObjectContext!
     }
     
-    //helper method from: http://www.raywenderlich.com/90971/introduction-mapkit-swift-tutorial
-    let regionRadius: CLLocationDistance = 1000
-    func centerMapOnLocation(location: CLLocation) {
-        let coordinateRegion = MKCoordinateRegionMakeWithDistance(location.coordinate,
-            regionRadius * 2.0, regionRadius * 2.0)
-        mapView.setRegion(coordinateRegion, animated: true)
-    }
     
     // MARK: Gesture support
     
@@ -119,10 +112,11 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
         for pin in results as! [Pin] {
             //http://stackoverflow.com/questions/25826221/is-it-possible-to-have-draggable-annotations-in-swift-when-using-mapkit
-            let pa = MKPointAnnotation()
-            pa.coordinate = pin.coordinate
-            pa.title = pin.title
-            self.mapView.addAnnotation(pa)
+            //let pa = MKPointAnnotation()
+            println("add new pin")
+            //pa.coordinate = pin.coordinate
+            //pa.title = pin.title
+            self.mapView.addAnnotation(pin)
         }
     }
 

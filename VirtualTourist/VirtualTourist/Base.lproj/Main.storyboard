@@ -20,6 +20,40 @@
             </objects>
             <point key="canvasLocation" x="-148" y="64"/>
         </scene>
+        <!--Photo Album View Controller-->
+        <scene sceneID="JlG-kT-HH9">
+            <objects>
+                <viewController storyboardIdentifier="PhotoAlbumViewController" id="0cT-6S-w6X" customClass="PhotoAlbumViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Sn0-yL-T3l"/>
+                        <viewControllerLayoutGuide type="bottom" id="ISQ-gx-B7l"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="SUN-oN-1zt">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="usE-tL-Y4v">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="200"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="200" id="MS6-E3-J2o"/>
+                                </constraints>
+                            </mapView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="usE-tL-Y4v" firstAttribute="top" secondItem="SUN-oN-1zt" secondAttribute="topMargin" id="Ht6-yH-UfL"/>
+                            <constraint firstItem="usE-tL-Y4v" firstAttribute="leading" secondItem="SUN-oN-1zt" secondAttribute="leadingMargin" constant="-16" id="WIO-2T-kXj"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="usE-tL-Y4v" secondAttribute="trailing" constant="-16" id="t2C-AU-NNd"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="mapView" destination="usE-tL-Y4v" id="8wk-lK-R5V"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="YXt-fe-UOg" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="595" y="58"/>
+        </scene>
         <!--Master-->
         <scene sceneID="VgW-fR-Quf">
             <objects>
@@ -61,7 +95,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6Cn-md-YlS" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="605" y="64"/>
+            <point key="canvasLocation" x="594" y="-792"/>
         </scene>
         <!--Map View Controller-->
         <scene sceneID="5k4-hc-nho">
@@ -130,7 +164,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lrm-kH-fPn" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1343" y="64"/>
+            <point key="canvasLocation" x="1332" y="-792"/>
         </scene>
     </scenes>
 </document>
