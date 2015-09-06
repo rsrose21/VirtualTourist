@@ -28,6 +28,9 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         
         //load any saved Pins
         fetchPins()
+        
+        //restore map to previous saved position
+        restoreMapRegion()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -39,6 +42,12 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         return CoreDataManager.sharedInstance.managedObjectContext!
     }
     
+    //save the map position
+    var file: String {
+        let manager = NSFileManager.defaultManager()
+        let url = manager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first as! NSURL
+        return url.URLByAppendingPathComponent("savedLocation").path!
+    }
     
     // MARK: Gesture support
     
@@ -117,6 +126,34 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             //pa.coordinate = pin.coordinate
             //pa.title = pin.title
             self.mapView.addAnnotation(pin)
+        }
+    }
+    
+    //save and retrieve the map location using NSKeyedArchiver
+    func saveMapRegion() {
+        let dictionary = [
+            "latitude" : mapView.region.center.latitude,
+            "longitude" : mapView.region.center.longitude,
+            "latitudeDelta" : mapView.region.span.latitudeDelta,
+            "longitudeDelta" : mapView.region.span.longitudeDelta
+        ]
+        NSKeyedArchiver.archiveRootObject(dictionary, toFile: file)
+    }
+    
+    private func restoreMapRegion() {
+        
+        if let regionDictionary = NSKeyedUnarchiver.unarchiveObjectWithFile(file) as? [String : AnyObject] {
+            
+            let longitude = regionDictionary["longitude"] as! CLLocationDegrees
+            let latitude = regionDictionary["latitude"] as! CLLocationDegrees
+            let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            
+            let longitudeDelta = regionDictionary["longitudeDelta"] as! CLLocationDegrees
+            let latitudeDelta = regionDictionary["latitudeDelta"] as! CLLocationDegrees
+            let span = MKCoordinateSpan(latitudeDelta: latitudeDelta, longitudeDelta: longitudeDelta)
+            
+            let savedRegion = MKCoordinateRegion(center: center, span: span)
+            mapView.setRegion(savedRegion, animated: true)
         }
     }
 

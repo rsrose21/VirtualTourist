@@ -46,15 +46,20 @@ extension MapViewController: MKMapViewDelegate {
         }
     }
     
+    //transition to PhotoAlbumViewController when user taps the map location annotation
     func mapView(mapView: MKMapView!, annotationView: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if control != annotationView.rightCalloutAccessoryView { return }
         
         let selectedPin = annotationView.annotation as! Pin
-        //load images for selected Pin
         
         let controller = self.storyboard?.instantiateViewControllerWithIdentifier("PhotoAlbumViewController") as! PhotoAlbumViewController
         //set selected Pin before transitioning to next view
         controller.currentPin = selectedPin
         self.navigationController?.pushViewController(controller, animated: true)
+    }
+    
+    //save map position after user moves map and/or zooms
+    func mapView(mapView: MKMapView!, regionDidChangeAnimated animated: Bool) {
+        saveMapRegion()
     }
 }
