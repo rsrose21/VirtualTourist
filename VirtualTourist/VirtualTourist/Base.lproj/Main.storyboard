@@ -38,12 +38,60 @@
                                     <constraint firstAttribute="height" constant="200" id="MS6-E3-J2o"/>
                                 </constraints>
                             </mapView>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="cq4-2e-sFR">
+                                <rect key="frame" x="0.0" y="200" width="600" height="360"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="bLv-Rp-aoC">
+                                    <size key="itemSize" width="160" height="160"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="0gw-ms-gpT">
+                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="KI7-za-xBO">
+                                                    <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
+                                                </imageView>
+                                            </subviews>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                        <constraints>
+                                            <constraint firstAttribute="trailing" secondItem="KI7-za-xBO" secondAttribute="trailing" id="2rh-PL-1Tv"/>
+                                            <constraint firstAttribute="bottom" secondItem="KI7-za-xBO" secondAttribute="bottom" id="8ID-2p-vGh"/>
+                                            <constraint firstItem="KI7-za-xBO" firstAttribute="leading" secondItem="0gw-ms-gpT" secondAttribute="leading" id="MxX-ol-u8c"/>
+                                            <constraint firstItem="KI7-za-xBO" firstAttribute="top" secondItem="0gw-ms-gpT" secondAttribute="top" id="cCT-fE-e38"/>
+                                        </constraints>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
+                            <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hn1-Wz-x9q">
+                                <rect key="frame" x="0.0" y="560" width="600" height="44"/>
+                                <items>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="JIl-Wf-8D5"/>
+                                    <barButtonItem title="New Collection" id="wT8-Zb-kJe" userLabel="New Collection"/>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="FMY-fZ-jqm"/>
+                                    <barButtonItem title="Delete Selected" id="V1r-WA-q4x" userLabel="Delete Selected"/>
+                                    <barButtonItem style="plain" systemItem="flexibleSpace" id="d7H-37-UOE"/>
+                                </items>
+                            </toolbar>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="usE-tL-Y4v" firstAttribute="top" secondItem="SUN-oN-1zt" secondAttribute="topMargin" id="Ht6-yH-UfL"/>
+                            <constraint firstItem="cq4-2e-sFR" firstAttribute="top" secondItem="usE-tL-Y4v" secondAttribute="bottom" id="IxU-4f-7n0"/>
+                            <constraint firstItem="Hn1-Wz-x9q" firstAttribute="top" secondItem="cq4-2e-sFR" secondAttribute="bottom" id="P1e-cf-WZX"/>
                             <constraint firstItem="usE-tL-Y4v" firstAttribute="leading" secondItem="SUN-oN-1zt" secondAttribute="leadingMargin" constant="-16" id="WIO-2T-kXj"/>
+                            <constraint firstItem="cq4-2e-sFR" firstAttribute="leading" secondItem="usE-tL-Y4v" secondAttribute="leading" id="ast-ON-0sb"/>
+                            <constraint firstItem="Hn1-Wz-x9q" firstAttribute="leading" secondItem="cq4-2e-sFR" secondAttribute="leading" id="ipk-xE-Yig"/>
+                            <constraint firstItem="cq4-2e-sFR" firstAttribute="trailing" secondItem="usE-tL-Y4v" secondAttribute="trailing" id="pwt-ip-mrW"/>
+                            <constraint firstItem="Hn1-Wz-x9q" firstAttribute="trailing" secondItem="cq4-2e-sFR" secondAttribute="trailing" id="qhp-Y3-jaX"/>
                             <constraint firstAttribute="trailingMargin" secondItem="usE-tL-Y4v" secondAttribute="trailing" constant="-16" id="t2C-AU-NNd"/>
+                            <constraint firstItem="ISQ-gx-B7l" firstAttribute="top" secondItem="cq4-2e-sFR" secondAttribute="bottom" constant="40" id="u4o-mf-0dT"/>
                         </constraints>
                     </view>
                     <connections>
