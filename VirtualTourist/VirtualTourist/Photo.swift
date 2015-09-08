@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 //make Photo available to Objective-C code
 @objc(Photo)
@@ -30,6 +31,16 @@ class Photo : NSManagedObject {
     @NSManaged var url: String
     //manage relationship in Core Data
     @NSManaged var location: Pin?
+    
+    
+    var image: UIImage? {
+        get {
+            return ImageCache().imageWithIdentifier(id)
+        }
+        set {
+            ImageCache().storeImage(newValue, withIdentifier: id)
+        }
+    }
     
     // Include this standard Core Data init method.
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {

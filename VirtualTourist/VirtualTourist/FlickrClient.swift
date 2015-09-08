@@ -16,6 +16,7 @@ let EXTRAS = "url_m"
 let SAFE_SEARCH = "1"
 let DATA_FORMAT = "json"
 let NO_JSON_CALLBACK = "1"
+let PHOTOS_PER_PAGE = "25"
 let BOUNDING_BOX_HALF_WIDTH = 1.0
 let BOUNDING_BOX_HALF_HEIGHT = 1.0
 let LAT_MIN = -90.0
@@ -34,7 +35,8 @@ class FlickrClient {
             "safe_search": SAFE_SEARCH,
             "extras": EXTRAS,
             "format": DATA_FORMAT,
-            "nojsoncallback": NO_JSON_CALLBACK
+            "nojsoncallback": NO_JSON_CALLBACK,
+            "per_page": PHOTOS_PER_PAGE
         ]
         getImageFromFlickrBySearch(methodArguments, completionHandler: completionHandler)
     }
@@ -97,6 +99,15 @@ class FlickrClient {
         }
         
         return (!urlVars.isEmpty ? "?" : "") + join("&", urlVars)
+    }
+    
+    //MARK:- SharedInstance
+    
+    class func sharedInstance()-> FlickrClient {
+        struct Singleton {
+            static var sharedInstance = FlickrClient()
+        }
+        return Singleton.sharedInstance
     }
 
 }

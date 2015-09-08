@@ -47,7 +47,7 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="0gw-ms-gpT">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" restorationIdentifier="PhotoCollectionViewCell" id="0gw-ms-gpT" customClass="PhotoCollectionViewCell" customModule="VirtualTourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
@@ -57,6 +57,12 @@
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="KI7-za-xBO">
                                                     <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
                                                 </imageView>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="detailDisclosure" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nmh-45-ipz">
+                                                    <rect key="frame" x="130" y="15" width="22" height="22"/>
+                                                    <state key="normal">
+                                                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                                    </state>
+                                                </button>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
@@ -65,7 +71,13 @@
                                             <constraint firstAttribute="bottom" secondItem="KI7-za-xBO" secondAttribute="bottom" id="8ID-2p-vGh"/>
                                             <constraint firstItem="KI7-za-xBO" firstAttribute="leading" secondItem="0gw-ms-gpT" secondAttribute="leading" id="MxX-ol-u8c"/>
                                             <constraint firstItem="KI7-za-xBO" firstAttribute="top" secondItem="0gw-ms-gpT" secondAttribute="top" id="cCT-fE-e38"/>
+                                            <constraint firstItem="Nmh-45-ipz" firstAttribute="trailing" secondItem="0gw-ms-gpT" secondAttribute="trailingMargin" id="iTZ-li-MWt"/>
+                                            <constraint firstItem="Nmh-45-ipz" firstAttribute="top" secondItem="0gw-ms-gpT" secondAttribute="topMargin" constant="7" id="ror-rl-6OW"/>
                                         </constraints>
+                                        <connections>
+                                            <outlet property="photoImage" destination="KI7-za-xBO" id="Jz2-XH-jEI"/>
+                                            <outlet property="removeButton" destination="Nmh-45-ipz" id="F3r-8n-63n"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
@@ -95,7 +107,10 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="collectionView" destination="cq4-2e-sFR" id="AKW-I6-ilv"/>
+                        <outlet property="deleteSelectedButton" destination="V1r-WA-q4x" id="UFN-0n-VSv"/>
                         <outlet property="mapView" destination="usE-tL-Y4v" id="8wk-lK-R5V"/>
+                        <outlet property="newCollectionButton" destination="wT8-Zb-kJe" id="s9p-9u-1t8"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YXt-fe-UOg" userLabel="First Responder" sceneMemberID="firstResponder"/>

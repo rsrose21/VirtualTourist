@@ -53,7 +53,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
     
     //http://stackoverflow.com/questions/3959994/how-to-add-a-push-pin-to-a-mkmapviewios-when-touching
     func addPin(gestureRecognizer: UIGestureRecognizer) {
-        println("gesture recognized")
+        
         if gestureRecognizer.state == UIGestureRecognizerState.Ended {
             let touchPoint = gestureRecognizer.locationInView(gestureRecognizer.view!)
             let touchMapCoordinate = mapView.convertPoint(touchPoint, toCoordinateFromView: mapView)
@@ -67,6 +67,20 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             
             mapView.addAnnotation(pin)
             reverseGeocode(pin)
+            
+            //fetch some photos from API for this location
+            FlickrClient.sharedInstance().searchPhotosByLatLon(pin.latitude, long: pin.longitude, completionHandler: {
+                JSONResult, error in
+                if let error = error {
+                    println(error)
+                } else {
+                    if let photosDictionary = JSONResult.valueForKey("photos") as? [String:AnyObject] {
+                        println(photosDictionary)
+                    } else {
+                        println("parse error getting photos")
+                    }
+                }
+            })
         }
     }
     
@@ -121,10 +135,6 @@ class MapViewController: UIViewController, MKMapViewDelegate {
         }
         for pin in results as! [Pin] {
             //http://stackoverflow.com/questions/25826221/is-it-possible-to-have-draggable-annotations-in-swift-when-using-mapkit
-            //let pa = MKPointAnnotation()
-            println("add new pin")
-            //pa.coordinate = pin.coordinate
-            //pa.title = pin.title
             self.mapView.addAnnotation(pin)
         }
     }

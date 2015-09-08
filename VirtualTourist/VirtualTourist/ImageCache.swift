@@ -12,6 +12,7 @@ class ImageCache {
     
     private var inMemoryCache = NSCache()
     
+    
     // MARK: - Retreiving images
     
     func imageWithIdentifier(identifier: String?) -> UIImage? {
