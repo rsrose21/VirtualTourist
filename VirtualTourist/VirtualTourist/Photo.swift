@@ -73,6 +73,8 @@ class Photo : NSManagedObject {
         id = dictionary[Keys.ID] as! String
         file = nil
         url = dictionary[Keys.Url] as! String
+        println(pin.location)
+        println(pin.id)
         self.location = pin
     }
 }

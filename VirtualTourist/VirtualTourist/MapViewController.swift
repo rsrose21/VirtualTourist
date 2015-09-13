@@ -90,6 +90,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                                 }
                                 //persist photos to core data
                                 dispatch_async(dispatch_get_main_queue()) {
+                                    println("save photos to core data")
                                     CoreDataManager.sharedInstance.saveContext()
                                 }
 

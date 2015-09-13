@@ -11,10 +11,13 @@ import MapKit
 import CoreData
 
 
-class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFetchedResultsControllerDelegate {
+class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFetchedResultsControllerDelegate, UICollectionViewDataSource {
     var currentPin: Pin!
     
     var selectedIndexes = [NSIndexPath]()
+    var insertedIndexPaths: [NSIndexPath]!
+    var deletedIndexPaths: [NSIndexPath]!
+    var updatedIndexPaths: [NSIndexPath]!
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var newCollectionButton: UIBarButtonItem!
@@ -29,7 +32,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
     lazy var fetchedResultsController: NSFetchedResultsController = {
         let fetchRequest = NSFetchRequest(entityName: "Photo")
         fetchRequest.sortDescriptors = []
-        fetchRequest.predicate = NSPredicate(format: "location == %@", self.currentPin.location)
+        fetchRequest.predicate = NSPredicate(format: "location == %@", self.currentPin)
         let fetchResultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
         return fetchResultController
         }()
@@ -61,6 +64,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
         pa.coordinate = currentPin.coordinate
         pa.title = currentPin.title
         self.mapView.addAnnotation(pa)
+        
+        println(currentPin)
     }
     
     //helper method from: http://www.raywenderlich.com/90971/introduction-mapkit-swift-tutorial
@@ -90,15 +95,23 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         return self.fetchedResultsController.sections?.count ?? 0
     }
-    
+    /*
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
         return sectionInfo.numberOfObjects
     }
+    */
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
+        println(sectionInfo.numberOfObjects)
+        println(currentPin.photos.count)
+        
+        return currentPin.photos.count
+    }
     
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCollectionViewCell", forIndexPath: indexPath) as! PhotoCollectionViewCell
-        
+        println(cell)
         configureCell(cell, atIndexPath: indexPath)
         
         return cell
@@ -111,7 +124,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
         let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         var cellImage = UIImage(named: "imagePlaceholder")
         cell.photoImage.image = nil
-        
+        println(photo)
         // Set the flickr image if already available (from hard disk or image cache)
         if photo.image != nil {
             cellImage = photo.image
@@ -122,5 +135,53 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
         }
         
         cell.photoImage.image = cellImage
+    }
+    
+    // MARK: - Fetched Results Controller Delegate
+    
+    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        // We are about to handle some new changes. Start out with empty arrays for each change type
+        insertedIndexPaths = [NSIndexPath]()
+        deletedIndexPaths = [NSIndexPath]()
+        updatedIndexPaths = [NSIndexPath]()
+    }
+    
+    // Insert, Update and delete collection view cells when objects are inserted, updated and deleted
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        switch type {
+        case .Insert:
+            println("Item added")
+            insertedIndexPaths.append(newIndexPath!)
+            break
+        case .Update:
+            println("Item updated")
+            updatedIndexPaths.append(indexPath!)
+            break
+        case .Delete:
+            println("Item deleted")
+            deletedIndexPaths.append(indexPath!)
+            break
+        default:
+            break
+        }
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        
+        println("in controllerDidChangeContent changes count: \(deletedIndexPaths.count) \(insertedIndexPaths.count)")
+        
+        collectionView.performBatchUpdates({ () -> Void in
+            for indexPath in self.insertedIndexPaths {
+                self.collectionView.insertItemsAtIndexPaths([indexPath])
+            }
+            
+            for indexPath in self.deletedIndexPaths {
+                self.collectionView.deleteItemsAtIndexPaths([indexPath])
+            }
+            for indexPath in self.updatedIndexPaths {
+                self.collectionView.reloadItemsAtIndexPaths([indexPath])
+            }
+            
+            }, completion: nil)
     }
 }
