@@ -75,9 +75,32 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                     println(error)
                 } else {
                     if let photosDictionary = JSONResult.valueForKey("photos") as? [String:AnyObject] {
-                        println(photosDictionary)
+                        
+                        var totalPhotosVal = 0
+                        if let totalPhotos = photosDictionary["total"] as? String {
+                            totalPhotosVal = (totalPhotos as NSString).integerValue
+                        }
+                        
+                        if totalPhotosVal > 0 {
+                            if let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] {
+                                
+                                for (var i = 0; i < photosArray.count; i++) {
+                                    let photoDict = photosArray[i] as [String: AnyObject]
+                                    let photo = Photo(dictionary: photoDict, pin: pin, context: self.sharedContext)
+                                }
+                                //persist photos to core data
+                                dispatch_async(dispatch_get_main_queue()) {
+                                    CoreDataManager.sharedInstance.saveContext()
+                                }
+
+                            } else {
+                                println("Cant find key 'photo' in \(photosDictionary)")
+                            }
+                        } else {
+                            println("No photos found for location")
+                        }
                     } else {
-                        println("parse error getting photos")
+                        println("Cant find key 'photos' in \(JSONResult)")
                     }
                 }
             })

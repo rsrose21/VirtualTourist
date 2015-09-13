@@ -20,7 +20,7 @@ class Photo : NSManagedObject {
         static let ID = "id"
         static let Title = "title"
         static let File = "file"
-        static let Url = "url"
+        static let Url = "url_m"
     }
     
     
@@ -59,18 +59,19 @@ class Photo : NSManagedObject {
         
         // Get the entity associated with the "Pin" type.  This is an object that contains
         // the information from the VirtualTourist.xcdatamodeld file.
-        let entity =  NSEntityDescription.entityForName("Pin", inManagedObjectContext: context)!
+        let entity =  NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
         
         // Now we can call an init method that we have inherited from NSManagedObject. Remember that
         // the Pin class is a subclass of NSManagedObject. This inherited init method does the
         // work of "inserting" our object into the context that was passed in as a parameter
         super.init(entity: entity,insertIntoManagedObjectContext: context)
-        
+        println(dictionary)
+    
         // After the Core Data work has been taken care of we can init the properties from the
         // dictionary. This works in the same way that it did before we started on Core Data
         title = dictionary[Keys.Title] as! String
         id = dictionary[Keys.ID] as! String
-        file = dictionary[Keys.File] as! String?
+        file = nil
         url = dictionary[Keys.Url] as! String
         self.location = pin
     }
