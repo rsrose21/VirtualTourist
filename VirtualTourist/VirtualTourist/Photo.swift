@@ -42,6 +42,12 @@ class Photo : NSManagedObject {
         }
     }
     
+    //remove the image file from the file system when deleted
+    override func prepareForDeletion() {
+        super.prepareForDeletion()
+        self.image = nil
+    }
+    
     // Include this standard Core Data init method.
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)

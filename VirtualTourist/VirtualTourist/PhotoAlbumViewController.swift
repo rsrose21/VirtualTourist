@@ -13,11 +13,10 @@ import CoreData
 
 class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFetchedResultsControllerDelegate {
     var currentPin: Pin!
-    
+    //keep track of tapped cells
     var selectedIndexes = [NSIndexPath]()
     var insertedIndexPaths: [NSIndexPath]!
     var deletedIndexPaths: [NSIndexPath]!
-    var updatedIndexPaths: [NSIndexPath]!
     
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var newCollectionButton: UIBarButtonItem!
@@ -70,8 +69,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
         pa.coordinate = currentPin.coordinate
         pa.title = currentPin.title
         self.mapView.addAnnotation(pa)
-        
-        println(currentPin)
     }
     
     //helper method from: http://www.raywenderlich.com/90971/introduction-mapkit-swift-tutorial
@@ -99,36 +96,29 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
     // MARK: - Fetched Results Controller Delegate
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
-        // We are about to handle some new changes. Start out with empty arrays for each change type
+        //reset before updates commence
         insertedIndexPaths = [NSIndexPath]()
         deletedIndexPaths = [NSIndexPath]()
-        updatedIndexPaths = [NSIndexPath]()
     }
     
     // Insert, Update and delete collection view cells when objects are inserted, updated and deleted
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         switch type {
         case .Insert:
-            println("Item added")
             insertedIndexPaths.append(newIndexPath!)
             break
-        case .Update:
-            println("Item updated")
-            updatedIndexPaths.append(indexPath!)
-            break
         case .Delete:
-            println("Item deleted")
             deletedIndexPaths.append(indexPath!)
             break
         default:
             break
         }
     }
-    /*
+    
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
         
-        println("in controllerDidChangeContent changes count: \(deletedIndexPaths.count) \(insertedIndexPaths.count)")
-        
+        //performBatchUpdates will animate any changes to the collection view performed inside the block
+        //http://www.raywenderlich.com/78551/beginning-ios-collection-views-swift-part-2
         collectionView.performBatchUpdates({ () -> Void in
             for indexPath in self.insertedIndexPaths {
                 self.collectionView.insertItemsAtIndexPaths([indexPath])
@@ -137,26 +127,44 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
             for indexPath in self.deletedIndexPaths {
                 self.collectionView.deleteItemsAtIndexPaths([indexPath])
             }
-            for indexPath in self.updatedIndexPaths {
-                self.collectionView.reloadItemsAtIndexPaths([indexPath])
-            }
             
             }, completion: nil)
     }
-    */
+    
     // MARK: actions
     
     @IBAction func newCollection(sender: AnyObject) {
-        self.newCollectionButton.enabled = false
+        newCollectionButton.enabled = false
         deleteAllPhotosAndCreateNewCollection()
+    }
+    
+    @IBAction func deleteSelected(sender: AnyObject) {
+        deleteSelectedButton.enabled = false
+        deleteSelectedPhotos()
+    }
+    
+    func  deleteSelectedPhotos() {
+        var photos = [Photo]()
+        //loop through the selected cells so we can get info of the photos to remove
+        for index in selectedIndexes {
+            //add the Photo to our array of items to remove
+            photos.append(fetchedResultsController.objectAtIndexPath(index) as! Photo)
+        }
+        //loop through the array of photos to remove and remove them from Core Data
+        for photo in photos {
+            sharedContext.deleteObject(photo)
+        }
+        //persist our changes
+        CoreDataManager.sharedInstance.saveContext()
+        //reset
+        selectedIndexes = [NSIndexPath]()
+        newCollectionButton.enabled = true
     }
     
     func deleteAllPhotosAndCreateNewCollection() {
         var currentPageNumber : Int = 0
-        //dataDownloadActivityIndicator.startAnimating()
         
         for photo in fetchedResultsController.fetchedObjects as! [Photo] {
-            //currentPageNumber = photo.pageNumber as Int
             sharedContext.deleteObject(photo)
         }
         CoreDataManager.sharedInstance.saveContext()
@@ -228,6 +236,25 @@ extension PhotoAlbumViewController : UICollectionViewDelegate, UICollectionViewD
         return cell
     }
     
+    //4
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCollectionViewCell
+        
+        //add/remove the tapped cell to our array
+        if let index = find(selectedIndexes, indexPath) {
+            selectedIndexes.removeAtIndex(index)
+        } else {
+            selectedIndexes.append(indexPath)
+        }
+        
+        //Then configure the cell
+        configureCell(cell, atIndexPath: indexPath)
+        
+        //toggle the delete button
+        deleteSelectedButton.enabled = true
+    }
+    
     //displays individual images in collection cell either from file cache or downloaded from API
     func configureCell(cell:PhotoCollectionViewCell, atIndexPath indexPath:NSIndexPath) {
         
@@ -278,5 +305,14 @@ extension PhotoAlbumViewController : UICollectionViewDelegate, UICollectionViewD
         }
         
         cell.photoImage.image = cellImage
+        
+        //toggle visibility of the delete button for each cell
+        if let index = find(selectedIndexes, indexPath) {
+            cell.removeButton.hidden = false
+            cell.photoImage.alpha = 0.5
+        } else {
+            cell.removeButton.hidden = true
+            cell.photoImage.alpha = 1.0
+        }
     }
 }
