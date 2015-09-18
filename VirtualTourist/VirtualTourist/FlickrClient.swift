@@ -60,7 +60,7 @@ class FlickrClient {
         let url = NSURL(string: urlString)!
         let request = NSURLRequest(URL: url)
         
-        let task = session.dataTaskWithRequest(request) {data, response, downloadError in
+        let task = session.dataTaskWithRequest(request) { data, response, downloadError in
             if let error = downloadError {
                 println("Could not complete the request \(error)")
             } else {
@@ -74,6 +74,27 @@ class FlickrClient {
                 } else {
                     completionHandler(result: parsedResult, error: nil)
                 }
+            }
+        }
+        
+        task.resume()
+    }
+    
+    // Download a single image from Flickr
+    func getSingleImage(filePath: String, completionHandler :(imageDate: NSData?, error:NSError?) -> Void) {
+        
+        let session = NSURLSession.sharedSession()
+        let url = NSURL(string: filePath)!
+        let request = NSURLRequest(URL: url)
+        
+        // Make the request
+        let task = session.dataTaskWithRequest(request) { data, response, downloadError in
+            
+            if let error = downloadError {
+                println("FlickrClient: getSingleImage error: \(error)")
+                completionHandler(imageDate: data, error: error)
+            } else {
+                completionHandler(imageDate: data, error: nil)
             }
         }
         

@@ -231,18 +231,50 @@ extension PhotoAlbumViewController : UICollectionViewDelegate, UICollectionViewD
     //displays individual images in collection cell either from file cache or downloaded from API
     func configureCell(cell:PhotoCollectionViewCell, atIndexPath indexPath:NSIndexPath) {
         
-        //create a placeholder image and display during API image download
+        //create a placeholder
         let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
         var cellImage = UIImage(named: "imagePlaceholder")
         cell.photoImage.image = nil
-        println(photo)
-        // Set the flickr image if already available (from hard disk or image cache)
+        
+        //do we have a cached image to display or do we need to download one?
         if photo.image != nil {
             cellImage = photo.image
         } else {
+            //create a loading indicator to display for each photo as it downloads from Flickr
+            let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
+            cell.addSubview(activityIndicator)
+            activityIndicator.frame = cell.bounds
+            activityIndicator.startAnimating()
             
-            //download image from API and save to cache
-            
+            //initiate the download
+            FlickrClient.sharedInstance().getSingleImage(photo.url) {
+                data, error in
+                
+                if let downloaderror = error {
+                    activityIndicator.removeFromSuperview()
+                    print("Flickr getSingleImage download error: \(downloaderror)")
+                }
+                if let imageData = data {
+                    
+                    // Create the image
+                    let image = UIImage(data: imageData)
+                    
+                    // Update the model so that information gets cached
+                    photo.image = image
+                    
+                    // update the cell later, on the main thread
+                    dispatch_async(dispatch_get_main_queue()) {
+                        activityIndicator.removeFromSuperview()
+                        cell.photoImage.image = image
+                        
+                        //cache the image to the file system
+                        CoreDataManager.sharedInstance.saveContext()
+                    }
+                } else {
+                    activityIndicator.removeFromSuperview()
+                    println("Unable to create image from Flickr download")
+                }
+            }
         }
         
         cell.photoImage.image = cellImage
