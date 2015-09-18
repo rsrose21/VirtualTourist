@@ -11,7 +11,7 @@ import MapKit
 import CoreData
 
 
-class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFetchedResultsControllerDelegate, UICollectionViewDataSource {
+class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFetchedResultsControllerDelegate {
     var currentPin: Pin!
     
     var selectedIndexes = [NSIndexPath]()
@@ -24,6 +24,9 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
     @IBOutlet weak var deleteSelectedButton: UIBarButtonItem!
     @IBOutlet weak var collectionView: UICollectionView!
    
+    //collection view constants
+    private let reuseIdentifier = "FlickrCell"
+    private let sectionInsets = UIEdgeInsets(top: 50.0, left: 20.0, bottom: 50.0, right: 20.0)
     
     var sharedContext: NSManagedObjectContext {
         return CoreDataManager.sharedInstance.managedObjectContext!
@@ -42,6 +45,9 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
         navigationController?.navigationBarHidden = false
         //disable delete button onload
         deleteSelectedButton.enabled = false
+        
+        //set view controller as the collection view's delegate and data source
+        collectionView.delegate = self
         
         // Start the fetched results controller
         var error: NSError?
@@ -90,53 +96,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
         collectionView.collectionViewLayout = layout
     }
     
-    //MARK:- UICollectionView
-    
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return self.fetchedResultsController.sections?.count ?? 0
-    }
-    /*
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
-        return sectionInfo.numberOfObjects
-    }
-    */
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
-        println(sectionInfo.numberOfObjects)
-        println(currentPin.photos.count)
-        
-        return currentPin.photos.count
-    }
-    
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCollectionViewCell", forIndexPath: indexPath) as! PhotoCollectionViewCell
-        println(cell)
-        configureCell(cell, atIndexPath: indexPath)
-        
-        return cell
-    }
-    
-    //displays individual images in collection cell either from file cache or downloaded from API
-    func configureCell(cell:PhotoCollectionViewCell, atIndexPath indexPath:NSIndexPath) {
-        
-        //create a placeholder image and display during API image download
-        let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
-        var cellImage = UIImage(named: "imagePlaceholder")
-        cell.photoImage.image = nil
-        println(photo)
-        // Set the flickr image if already available (from hard disk or image cache)
-        if photo.image != nil {
-            cellImage = photo.image
-        } else {
-            
-            //download image from API and save to cache
-            
-        }
-        
-        cell.photoImage.image = cellImage
-    }
-    
     // MARK: - Fetched Results Controller Delegate
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
@@ -165,7 +124,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
             break
         }
     }
-    
+    /*
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
         
         println("in controllerDidChangeContent changes count: \(deletedIndexPaths.count) \(insertedIndexPaths.count)")
@@ -183,5 +142,109 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
             }
             
             }, completion: nil)
+    }
+    */
+    // MARK: actions
+    
+    @IBAction func newCollection(sender: AnyObject) {
+        self.newCollectionButton.enabled = false
+        deleteAllPhotosAndCreateNewCollection()
+    }
+    
+    func deleteAllPhotosAndCreateNewCollection() {
+        var currentPageNumber : Int = 0
+        //dataDownloadActivityIndicator.startAnimating()
+        
+        for photo in fetchedResultsController.fetchedObjects as! [Photo] {
+            //currentPageNumber = photo.pageNumber as Int
+            sharedContext.deleteObject(photo)
+        }
+        CoreDataManager.sharedInstance.saveContext()
+        loadNewCollection(currentPageNumber)
+    }
+    
+    //Load new flickr image collection by taking into account next page number
+    func loadNewCollection(currentPageNumber: Int) {
+        FlickrClient.sharedInstance().searchPhotosByLatLon(currentPin.latitude, long: currentPin.longitude, completionHandler: {
+            JSONResult, error in
+            if let error = error {
+                println(error)
+            } else {
+                if let photosDictionary = JSONResult.valueForKey("photos") as? [String:AnyObject] {
+                    
+                    var totalPhotosVal = 0
+                    if let totalPhotos = photosDictionary["total"] as? String {
+                        totalPhotosVal = (totalPhotos as NSString).integerValue
+                    }
+                    
+                    if totalPhotosVal > 0 {
+                        if let photosArray = photosDictionary["photo"] as? [[String: AnyObject]] {
+                            
+                            for (var i = 0; i < photosArray.count; i++) {
+                                let photoDict = photosArray[i] as [String: AnyObject]
+                                let photo = Photo(dictionary: photoDict, pin: self.currentPin, context: self.sharedContext)
+                            }
+                            //persist photos to core data
+                            dispatch_async(dispatch_get_main_queue()) {
+                                self.newCollectionButton.enabled = true
+                                CoreDataManager.sharedInstance.saveContext()
+                            }
+                            
+                        } else {
+                            println("Cant find key 'photo' in \(photosDictionary)")
+                        }
+                    } else {
+                        println("No photos found for location")
+                    }
+                } else {
+                    println("Cant find key 'photos' in \(JSONResult)")
+                }
+            }
+        })
+
+    }
+}
+
+//http://www.raywenderlich.com/78550/beginning-ios-collection-views-swift-part-1
+extension PhotoAlbumViewController : UICollectionViewDelegate, UICollectionViewDataSource {
+    
+    //1
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        return self.fetchedResultsController.sections?.count ?? 0
+    }
+    
+    //2
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        let sectionInfo = self.fetchedResultsController.sections![section] as! NSFetchedResultsSectionInfo
+        return sectionInfo.numberOfObjects
+    }
+    
+    //3
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as! PhotoCollectionViewCell
+        
+        // Configure the cell
+        self.configureCell(cell, atIndexPath: indexPath)
+        return cell
+    }
+    
+    //displays individual images in collection cell either from file cache or downloaded from API
+    func configureCell(cell:PhotoCollectionViewCell, atIndexPath indexPath:NSIndexPath) {
+        
+        //create a placeholder image and display during API image download
+        let photo = self.fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
+        var cellImage = UIImage(named: "imagePlaceholder")
+        cell.photoImage.image = nil
+        println(photo)
+        // Set the flickr image if already available (from hard disk or image cache)
+        if photo.image != nil {
+            cellImage = photo.image
+        } else {
+            
+            //download image from API and save to cache
+            
+        }
+        
+        cell.photoImage.image = cellImage
     }
 }
