@@ -18,6 +18,9 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
     var insertedIndexPaths: [NSIndexPath]!
     var deletedIndexPaths: [NSIndexPath]!
     
+    //keep track of current page number for Flickr photos
+    var currentPageNumber : Int = 0
+    
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var newCollectionButton: UIBarButtonItem!
     @IBOutlet weak var deleteSelectedButton: UIBarButtonItem!
@@ -162,7 +165,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
     }
     
     func deleteAllPhotosAndCreateNewCollection() {
-        var currentPageNumber : Int = 0
+        currentPageNumber++
         
         for photo in fetchedResultsController.fetchedObjects as! [Photo] {
             sharedContext.deleteObject(photo)
@@ -173,7 +176,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
     
     //Load new flickr image collection by taking into account next page number
     func loadNewCollection(currentPageNumber: Int) {
-        FlickrClient.sharedInstance().searchPhotosByLatLon(currentPin.latitude, long: currentPin.longitude, completionHandler: {
+        FlickrClient.sharedInstance().searchPhotosByLatLon(currentPin.latitude, long: currentPin.longitude, page: currentPageNumber, completionHandler: {
             JSONResult, error in
             if let error = error {
                 println(error)

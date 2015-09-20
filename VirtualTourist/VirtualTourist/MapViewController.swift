@@ -69,7 +69,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
             reverseGeocode(pin)
             
             //fetch some photos from API for this location
-            FlickrClient.sharedInstance().searchPhotosByLatLon(pin.latitude, long: pin.longitude, completionHandler: {
+            FlickrClient.sharedInstance().searchPhotosByLatLon(pin.latitude, long: pin.longitude, page: 0, completionHandler: {
                 JSONResult, error in
                 if let error = error {
                     println(error)
@@ -90,7 +90,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                                 }
                                 //persist photos to core data
                                 dispatch_async(dispatch_get_main_queue()) {
-                                    println("save photos to core data")
+                                    //save photos to core data
                                     CoreDataManager.sharedInstance.saveContext()
                                 }
 
@@ -138,8 +138,7 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                 if placemark.country != nil {
                     addressString = addressString + placemark.country
                 }
-                
-                println(addressString)
+
                 //update Pin and save
                 annotation.location = addressString
                 CoreDataManager.sharedInstance.saveContext()

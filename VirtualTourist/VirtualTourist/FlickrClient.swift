@@ -26,7 +26,7 @@ let LON_MAX = 180.0
 
 class FlickrClient {
     
-    func searchPhotosByLatLon(lat: Double, long: Double, completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
+    func searchPhotosByLatLon(lat: Double, long: Double, page: Int, completionHandler: (result: AnyObject!, error: NSError?) -> Void) {
         println("Searching...")
         let methodArguments = [
             "method": METHOD_NAME,
@@ -36,9 +36,10 @@ class FlickrClient {
             "extras": EXTRAS,
             "format": DATA_FORMAT,
             "nojsoncallback": NO_JSON_CALLBACK,
-            "per_page": PHOTOS_PER_PAGE
+            "per_page": PHOTOS_PER_PAGE,
+            "page": page
         ]
-        getImageFromFlickrBySearch(methodArguments, completionHandler: completionHandler)
+        getImageFromFlickrBySearch(methodArguments as! [String : AnyObject], completionHandler: completionHandler)
     }
     
     func createBoundingBoxString(latitude: Double, longitude: Double) -> String {
