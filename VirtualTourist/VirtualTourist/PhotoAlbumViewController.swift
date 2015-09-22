@@ -193,7 +193,9 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, NSFe
                             
                             for (var i = 0; i < photosArray.count; i++) {
                                 let photoDict = photosArray[i] as [String: AnyObject]
-                                let photo = Photo(dictionary: photoDict, pin: self.currentPin, context: self.sharedContext)
+                                dispatch_async(dispatch_get_main_queue(), {
+                                    let photo = Photo(dictionary: photoDict, pin: self.currentPin, context: self.sharedContext)
+                                })
                             }
                             //persist photos to core data
                             dispatch_async(dispatch_get_main_queue()) {
@@ -289,17 +291,17 @@ extension PhotoAlbumViewController : UICollectionViewDelegate, UICollectionViewD
                     // Create the image
                     let image = UIImage(data: imageData)
                     
-                    // Update the model so that information gets cached
-                    photo.image = image
-                    
                     // update the cell later, on the main thread
-                    dispatch_async(dispatch_get_main_queue()) {
+                    dispatch_async(dispatch_get_main_queue(), {
+                        // Update the model so that information gets cached
+                        photo.image = image
+                        
                         activityIndicator.removeFromSuperview()
                         cell.photoImage.image = image
                         
                         //cache the image to the file system
                         CoreDataManager.sharedInstance.saveContext()
-                    }
+                    })
                 } else {
                     activityIndicator.removeFromSuperview()
                     println("Unable to create image from Flickr download")
