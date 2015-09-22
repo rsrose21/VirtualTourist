@@ -313,10 +313,8 @@ extension PhotoAlbumViewController : UICollectionViewDelegate, UICollectionViewD
         
         //toggle visibility of the delete button for each cell
         if let index = find(selectedIndexes, indexPath) {
-            cell.removeButton.hidden = false
             cell.photoImage.alpha = 0.5
         } else {
-            cell.removeButton.hidden = true
             cell.photoImage.alpha = 1.0
         }
     }
