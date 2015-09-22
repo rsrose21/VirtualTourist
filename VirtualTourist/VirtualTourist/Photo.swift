@@ -70,7 +70,7 @@ class Photo : NSManagedObject {
         // Now we can call an init method that we have inherited from NSManagedObject. Remember that
         // the Pin class is a subclass of NSManagedObject. This inherited init method does the
         // work of "inserting" our object into the context that was passed in as a parameter
-        super.init(entity: entity,insertIntoManagedObjectContext: context)
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
     
         // After the Core Data work has been taken care of we can init the properties from the
         // dictionary. This works in the same way that it did before we started on Core Data
@@ -78,8 +78,7 @@ class Photo : NSManagedObject {
         id = dictionary[Keys.ID] as! String
         file = nil
         url = dictionary[Keys.Url] as! String
-        println(pin.location)
-        println(pin.id)
+        
         self.location = pin
     }
 }

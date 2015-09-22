@@ -8,12 +8,13 @@
 
 import Foundation
 import CoreData
+import MapKit
 
 //make Pin available to Objective-C code
 @objc(Pin)
 
 //make Pin a subclass of NSManagedObject
-class Pin : NSManagedObject {
+class Pin : NSManagedObject, MKAnnotation {
     
     struct Keys {
         static let Latitude = "latitude"
@@ -29,10 +30,28 @@ class Pin : NSManagedObject {
     @NSManaged var location: String
     @NSManaged var photos: [Photo]
     
+    // MARK: computed properties to conform to the MKAnnotation protocol
+    
+    //create a property to go in between the coordinate and the latitude and longitude: https://discussions.udacity.com/t/core-data-concurrency-with-mkannotation/30830
+    var safeCoordinate: CLLocationCoordinate2D? = nil
+    //MapKit calls for this property from various threads, resulting in a NSManaged concurrency error for latitude and longitude
+    var coordinate : CLLocationCoordinate2D {
+        get {
+            return safeCoordinate!
+        }
+    }
+    
+    var title: String {
+        return location
+    }
+    var subtitle: String {
+        return "tap to see photos"
+    }
 
     // Include this standard Core Data init method.
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
+        safeCoordinate = CLLocationCoordinate2DMake(latitude, longitude)
     }
     
     /**
@@ -69,5 +88,6 @@ class Pin : NSManagedObject {
         //generate uid in swift: http://stackoverflow.com/questions/24428250/generate-uuid-in-xcode-swift
         id = NSUUID().UUIDString
         location = dictionary[Keys.Location] as! String
+        safeCoordinate = CLLocationCoordinate2DMake(self.latitude, self.longitude)
     }
 }

@@ -86,14 +86,18 @@ class MapViewController: UIViewController, MKMapViewDelegate {
                                 
                                 for (var i = 0; i < photosArray.count; i++) {
                                     let photoDict = photosArray[i] as [String: AnyObject]
-                                    let photo = Photo(dictionary: photoDict, pin: pin, context: self.sharedContext)
+                                    //prevent core data concurrency error with managed threads
+                                    dispatch_async(dispatch_get_main_queue(), {
+                                        //a context assumes the default owner is the thread or queue that allocated it
+                                        //https://developer.apple.com/library/prerelease/ios/documentation/Cocoa/Reference/CoreDataFramework/Classes/NSManagedObjectContext_Class/index.html
+                                        let photo = Photo(dictionary: photoDict, pin: pin, context: self.sharedContext)
+                                    })
                                 }
                                 //persist photos to core data
-                                dispatch_async(dispatch_get_main_queue()) {
+                                dispatch_async(dispatch_get_main_queue(), {
                                     //save photos to core data
                                     CoreDataManager.sharedInstance.saveContext()
-                                }
-
+                                })
                             } else {
                                 println("Cant find key 'photo' in \(photosDictionary)")
                             }
